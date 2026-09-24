@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, Maximize, FileText, CheckCircle } from 'lucide-react';
+import { Download, Maximize, FileText } from 'lucide-react';
 import { useWindowManager } from '../../context/WindowContext';
 
 export const ResumeContent = () => {

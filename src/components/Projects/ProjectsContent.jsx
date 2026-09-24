@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, X, ExternalLink } from 'lucide-react';
+import { X, ExternalLink } from 'lucide-react';
 import { projects } from '../../data/projects';
 
 const GithubIconSvg = () => (
@@ -198,8 +198,8 @@ export const ProjectsContent = () => {
             <div 
               style={{ 
                 display: 'grid', 
-                gridTemplateColumns: 'repeat(4, 1fr)', 
-                gap: '24px 16px', 
+                gridTemplateColumns: 'repeat(auto-fill, minmax(68px, 1fr))', 
+                gap: '20px 12px', 
                 maxWidth: '460px', 
                 margin: '0 auto 20px auto'
               }}
@@ -380,7 +380,7 @@ export const ProjectsContent = () => {
             </div>
 
             {/* Modal content body */}
-            <div style={{ padding: '16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '280px' }}>
+            <div style={{ padding: '16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: 'min(300px, 45vh)' }}>
               <div>
                 <h4 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '2px' }}>{selectedProject.title}</h4>
                 <span style={{ fontSize: '10px', color: 'var(--accent-orange)', fontWeight: 'bold' }}>

@@ -128,50 +128,50 @@ export const ContactContent = () => {
               {/* Retro Email Form header styles */}
               <div className="retro-card" style={{ backgroundColor: '#EAE6DB', padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px', margin: 0 }}>
                 {/* To Field */}
-                <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #CCC', paddingBottom: '6px' }}>
-                  <span style={{ width: '80px', fontWeight: 'bold', fontSize: '13px' }}>TO:</span>
-                  <span style={{ fontSize: '13px', fontFamily: 'monospace', fontWeight: '600' }}>
+                <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #CCC', paddingBottom: '6px', flexWrap: 'wrap', gap: '4px' }}>
+                  <span style={{ width: '80px', fontWeight: 'bold', fontSize: '13px', flexShrink: 0 }}>TO:</span>
+                  <span style={{ fontSize: '13px', fontFamily: 'monospace', fontWeight: '600', wordBreak: 'break-all' }}>
                     Md Kavish &lt;razdankavish67@gmail.com&gt;
                   </span>
                 </div>
 
                 {/* From Name */}
-                <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #CCC', paddingBottom: '6px' }}>
-                  <label htmlFor="name-input" style={{ width: '80px', fontWeight: 'bold', fontSize: '13px' }}>FROM NAME:</label>
+                <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #CCC', paddingBottom: '6px', flexWrap: 'wrap', gap: '4px' }}>
+                  <label htmlFor="name-input" style={{ width: '80px', fontWeight: 'bold', fontSize: '13px', flexShrink: 0 }}>FROM NAME:</label>
                   <input 
                     id="name-input"
                     type="text" 
                     placeholder="Enter your name"
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '13px' }}
+                    style={{ flex: '1 1 160px', border: 'none', background: 'transparent', fontSize: '13px', minWidth: '140px' }}
                   />
                   {errors.name && <AlertTriangle size={14} style={{ color: '#FF5E57' }} title={errors.name} />}
                 </div>
 
                 {/* From Email */}
-                <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #CCC', paddingBottom: '6px' }}>
-                  <label htmlFor="email-input" style={{ width: '80px', fontWeight: 'bold', fontSize: '13px' }}>FROM EMAIL:</label>
+                <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #CCC', paddingBottom: '6px', flexWrap: 'wrap', gap: '4px' }}>
+                  <label htmlFor="email-input" style={{ width: '80px', fontWeight: 'bold', fontSize: '13px', flexShrink: 0 }}>FROM EMAIL:</label>
                   <input 
                     id="email-input"
                     type="text" 
                     placeholder="your@email.com"
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '13px' }}
+                    style={{ flex: '1 1 160px', border: 'none', background: 'transparent', fontSize: '13px', minWidth: '140px' }}
                   />
                   {errors.email && <AlertTriangle size={14} style={{ color: '#FF5E57' }} title={errors.email} />}
                 </div>
 
                 {/* Subject */}
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <label htmlFor="subject-input" style={{ width: '80px', fontWeight: 'bold', fontSize: '13px' }}>SUBJECT:</label>
+                <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
+                  <label htmlFor="subject-input" style={{ width: '80px', fontWeight: 'bold', fontSize: '13px', flexShrink: 0 }}>SUBJECT:</label>
                   <input 
                     id="subject-input"
                     type="text" 
                     value={formData.subject}
                     onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                    style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '13px' }}
+                    style={{ flex: '1 1 160px', border: 'none', background: 'transparent', fontSize: '13px', minWidth: '140px' }}
                   />
                 </div>
               </div>

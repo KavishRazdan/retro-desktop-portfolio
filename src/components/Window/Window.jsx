@@ -1,5 +1,5 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useWindowManager } from '../../context/WindowContext';
 import { useDrag } from '../../hooks/useDrag';
 import { WindowHeader } from './WindowHeader';
@@ -68,19 +68,25 @@ export const Window = ({ id, children }) => {
     }
   };
 
+  // Calculate viewport-safe bounds so windows never spawn offscreen on laptops/tablets
+  const effectiveWidth = win.isMaximized ? window.innerWidth : Math.min(win.width, window.innerWidth - 24);
+  const effectiveHeight = win.isMaximized ? (window.innerHeight - 90) : Math.min(win.height, window.innerHeight - 120);
+  const effectiveX = win.isMaximized ? 0 : Math.max(8, Math.min(win.x, Math.max(8, window.innerWidth - effectiveWidth - 16)));
+  const effectiveY = win.isMaximized ? 0 : Math.max(8, Math.min(win.y, Math.max(8, window.innerHeight - effectiveHeight - 90)));
+
   // Framer Motion Animation Configurations
   const desktopVariants = {
     hidden: { 
       opacity: 0, 
       scale: 0.8,
-      y: win.y + 30,
-      x: win.x
+      y: effectiveY + 30,
+      x: effectiveX
     },
     visible: { 
       opacity: 1, 
       scale: 1,
-      y: win.y,
-      x: win.x,
+      y: effectiveY,
+      x: effectiveX,
       transition: { 
         type: 'spring', 
         stiffness: 280, 

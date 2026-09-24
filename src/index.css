@@ -580,7 +580,11 @@ button:active {
     padding: 18px 14px !important;
   }
 
-  .terminal-prompt-input {
+  .terminal-prompt-input,
+  input[type="text"],
+  input[type="email"],
+  textarea,
+  select {
     font-size: 16px !important; /* Prevents iOS auto-zoom on input focus */
   }
 }
