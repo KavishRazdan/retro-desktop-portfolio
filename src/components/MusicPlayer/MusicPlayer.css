@@ -1,0 +1,145 @@
+.music-player-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  background-color: #F9F8F3;
+  padding: 10px;
+  height: 100%;
+}
+
+/* Vinyl record decks styling */
+.vinyl-deck {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  background: #E4DFD3;
+  border: 3px solid var(--border-color);
+  box-shadow: inset 2px 2px 0px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.vinyl-disc {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  background-color: #1a1a1a;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.vinyl-disc.spinning {
+  animation: spin 3.5s linear infinite;
+}
+
+.vinyl-groove {
+  position: absolute;
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  border: 1px dashed #333;
+}
+
+.vinyl-label {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #FF8A00;
+  border: 1.5px solid var(--border-color);
+}
+
+.vinyl-center {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: #FFFDF9;
+  border: 1.5px solid var(--border-color);
+  border-radius: 50%;
+}
+
+/* Turntable needle arm pivot */
+.player-arm {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  width: 12px;
+  height: 60px;
+  background: transparent;
+  border-right: 3px solid #888;
+  border-top: 3px solid #888;
+  transform-origin: top right;
+  transform: rotate(-25deg);
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: none;
+}
+
+.player-arm::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: -5px;
+  width: 8px;
+  height: 12px;
+  background-color: #444;
+  border: 1px solid var(--border-color);
+}
+
+.player-arm.active {
+  transform: rotate(0deg);
+}
+
+/* Seek slider bar styles */
+.music-progress-bar-track {
+  width: 100%;
+  height: 10px;
+  background-color: #FFFFFF;
+  border: 2px solid var(--border-color);
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.1);
+  cursor: pointer;
+  position: relative;
+  margin-top: 4px;
+}
+
+.music-progress-bar-fill {
+  height: 100%;
+  background-color: var(--header-bg);
+}
+
+/* Dynamic Equalizer Visualizer */
+.music-equalizer {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  width: 40px;
+  height: 25px;
+}
+
+.eq-bar {
+  width: 6px;
+  background-color: var(--border-color);
+  transition: height 0.15s ease;
+  height: 3px;
+}
+
+.eq-bar.anim {
+  animation: bounceEq 0.8s ease-in-out infinite alternate;
+}
+
+/* Keyframes animations */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounceEq {
+  0% { height: 4px; }
+  100% { height: 24px; }
+}

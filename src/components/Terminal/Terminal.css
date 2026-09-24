@@ -1,0 +1,68 @@
+.terminal-container {
+  background-color: #111111;
+  border: 1px solid var(--border-color);
+  padding: 16px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  color: #2ed573;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+}
+
+.terminal-history {
+  flex: 1;
+  margin-bottom: 8px;
+}
+
+.terminal-line {
+  white-space: pre-wrap;
+  margin-bottom: 4px;
+  line-height: 1.4;
+  color: #2ed573;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.terminal-prompt-form {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.terminal-prompt-symbol {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: #2ed573;
+  margin-right: 8px;
+}
+
+.terminal-prompt-input {
+  background: transparent;
+  border: none;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  color: #ffffff;
+  outline: none;
+  flex: 1;
+  padding: 0;
+}
+
+/* scanlines CRT effect overlay */
+.terminal-container::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 38px; /* below window header */
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 5;
+  background-size: 100% 4px, 6px 100%;
+  pointer-events: none;
+}
