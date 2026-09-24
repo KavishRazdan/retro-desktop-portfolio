@@ -267,7 +267,7 @@ export const SkillsContent = () => {
           </h4>
 
           {/* Grid of skill shortcuts */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(78px, 1fr))', gap: '14px' }}>
             {list.map((skill) => (
               <div
                 key={skill.name}
@@ -280,6 +280,7 @@ export const SkillsContent = () => {
                 }}
                 onMouseEnter={() => setHoveredSkill(skill)}
                 onMouseLeave={() => setHoveredSkill(null)}
+                onClick={() => setHoveredSkill(skill)}
                 tabIndex={0}
                 aria-label={`${skill.name} level ${skill.level}%`}
                 onFocus={() => setHoveredSkill(skill)}

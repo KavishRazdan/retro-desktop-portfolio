@@ -163,8 +163,10 @@ export const Window = ({ id, children }) => {
       className={`retro-window ${win.isMaximized ? 'maximized' : ''} ${win.isMinimized ? 'minimized' : ''} ${isActive ? 'active-window' : ''}`}
       style={{
         zIndex,
-        width: win.isMaximized ? '100vw' : win.width,
-        height: win.isMaximized ? 'calc(100vh - 90px)' : win.height,
+        width: win.isMaximized ? '100vw' : `min(${win.width}px, calc(100vw - 24px))`,
+        height: win.isMaximized ? 'calc(100vh - 90px)' : `min(${win.height}px, calc(100vh - 120px))`,
+        maxWidth: 'calc(100vw - 24px)',
+        maxHeight: win.isMaximized ? 'calc(100vh - 90px)' : 'calc(100vh - 120px)',
         // For dragging, we let Framer Motion handle coordinates via 'animate' properties
         boxShadow: isActive ? '6px 6px 0px #444444' : '4px 4px 0px #444444',
         pointerEvents: win.isMinimized ? 'none' : 'auto'
