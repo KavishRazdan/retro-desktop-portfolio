@@ -136,7 +136,7 @@ To run Kavish.OS on your local machine, ensure you have **Node.js** (v18 or high
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/KavishRazdan/personal-website.git
+git clone https://github.com/KavishRazdan/retro-desktop-portfolio.git
 cd portfolio
 ```
 
