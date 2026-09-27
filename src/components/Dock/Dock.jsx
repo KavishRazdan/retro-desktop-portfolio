@@ -1,5 +1,21 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  User,
+  Code2,
+  Cpu,
+  GraduationCap,
+  Briefcase,
+  Mail,
+  FileText,
+  Terminal,
+  Trophy,
+  Sparkles,
+  Music,
+  Calendar,
+  Minus,
+  X
+} from 'lucide-react';
 import { useWindowManager } from '../../context/WindowContext';
 import { DOCK_ITEMS } from '../../utils/constants';
 
@@ -63,8 +79,23 @@ const getIconComponent = (iconName) => {
   }
 };
 
+const APP_METADATA = {
+  profile: { label: 'Profile', color: '#717A50', icon: User },
+  projects: { label: 'Projects', color: '#2B6CB0', icon: Code2 },
+  skills: { label: 'Skills', color: '#2C7A7B', icon: Cpu },
+  education: { label: 'Education', color: '#4C51BF', icon: GraduationCap },
+  experience: { label: 'Experience', color: '#DD6B20', icon: Briefcase },
+  contact: { label: 'Contact', color: '#E53E3E', icon: Mail },
+  resume: { label: 'Resume', color: '#D69E2E', icon: FileText },
+  terminal: { label: 'Terminal.exe', color: '#1A202C', icon: Terminal },
+  achievements: { label: 'Achievements', color: '#B7791F', icon: Trophy },
+  funfacts: { label: 'FunFacts.txt', color: '#805AD5', icon: Sparkles },
+  music: { label: 'NowPlaying', color: '#D53F8C', icon: Music },
+  timeline: { label: 'Timeline', color: '#4A5568', icon: Calendar }
+};
+
 export const Dock = () => {
-  const { openWindow } = useWindowManager();
+  const { openWindow, windows, focusWindow, closeWindow } = useWindowManager();
 
   const handleDockItemClick = (item, e) => {
     if (item.isHome) {
@@ -78,45 +109,147 @@ export const Dock = () => {
     }
   };
 
+  // Find all open windows that are currently minimized
+  const minimizedWindows = Object.entries(windows || {}).filter(
+    ([, win]) => win && win.isOpen && win.isMinimized
+  );
+
   return (
     <div className="dock-wrapper" id="dock-system">
       <div className="dock-inner-container">
-        {DOCK_ITEMS.map((item) => (
-          <motion.div
-            key={item.id}
-            className="dock-item"
-            style={{ 
-              backgroundColor: item.color,
-              borderRadius: '12px',
-              border: '2.5px solid var(--border-color)',
-              boxShadow: '3px 3px 0px var(--border-color)',
-              width: '46px',
-              height: '46px'
-            }}
-            whileHover={{ 
-              scale: 1.22, 
-              y: -8,
-              boxShadow: '4px 4px 0px var(--border-color)' 
-            }}
-            transition={{ 
-              type: 'spring', 
-              stiffness: 400, 
-              damping: 14 
-            }}
-            onClick={(e) => handleDockItemClick(item, e)}
-            tabIndex={0}
-            role="button"
-            aria-label={`Go to ${item.label}`}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleDockItemClick(item, e);
-              }
-            }}
-          >
-            {getIconComponent(item.icon)}
-            <span className="dock-tooltip">{item.label}</span>
-          </motion.div>
-        ))}
+        {/* Permanent Dock Shortcuts */}
+        {DOCK_ITEMS.map((item) => {
+          const isProfileActive = item.isHome && windows?.profile?.isOpen && !windows?.profile?.isMinimized;
+          const isResumeActive = item.isDownload && windows?.resume?.isOpen && !windows?.resume?.isMinimized;
+
+          return (
+            <motion.div
+              key={item.id}
+              className="dock-item"
+              style={{
+                backgroundColor: item.color,
+                borderRadius: '12px',
+                border: '2.5px solid var(--border-color)',
+                boxShadow: '3px 3px 0px var(--border-color)',
+                width: '46px',
+                height: '46px',
+                position: 'relative'
+              }}
+              whileHover={{
+                scale: 1.22,
+                y: -8,
+                boxShadow: '4px 4px 0px var(--border-color)'
+              }}
+              transition={{
+                type: 'spring',
+                stiffness: 400,
+                damping: 14
+              }}
+              onClick={(e) => handleDockItemClick(item, e)}
+              tabIndex={0}
+              role="button"
+              aria-label={`Go to ${item.label}`}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleDockItemClick(item, e);
+                }
+              }}
+            >
+              {getIconComponent(item.icon)}
+              {(isProfileActive || isResumeActive) && (
+                <span className="dock-active-dot" />
+              )}
+              <span className="dock-tooltip">{item.label}</span>
+            </motion.div>
+          );
+        })}
+
+        {/* Dynamic Minimized Applications Section */}
+        <AnimatePresence>
+          {minimizedWindows.length > 0 && (
+            <motion.div
+              key="dock-divider"
+              className="dock-divider"
+              initial={{ scaleY: 0, opacity: 0 }}
+              animate={{ scaleY: 1, opacity: 1 }}
+              exit={{ scaleY: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            />
+          )}
+
+          {minimizedWindows.map(([id]) => {
+            const meta = APP_METADATA[id] || { label: id, color: '#444444', icon: Code2 };
+            const IconComp = meta.icon;
+
+            return (
+              <motion.div
+                key={`minimized-${id}`}
+                layout
+                className="dock-item dock-item-minimized"
+                style={{
+                  backgroundColor: meta.color,
+                  borderRadius: '12px',
+                  border: '2.5px solid var(--border-color)',
+                  boxShadow: '3px 3px 0px var(--border-color)',
+                  width: '46px',
+                  height: '46px'
+                }}
+                initial={{ scale: 0, opacity: 0, y: 15 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0, opacity: 0, y: 15 }}
+                whileHover={{
+                  scale: 1.22,
+                  y: -8,
+                  boxShadow: '4px 4px 0px var(--border-color)'
+                }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 400,
+                  damping: 18
+                }}
+                onClick={() => focusWindow(id)}
+                tabIndex={0}
+                role="button"
+                aria-label={`Restore ${meta.label}`}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    focusWindow(id);
+                  }
+                }}
+              >
+                <IconComp size={22} color="#FFFFFF" strokeWidth={2.4} />
+
+                {/* Minimized indicator badge */}
+                <span
+                  className="dock-minimized-badge"
+                  title="Minimized application"
+                >
+                  <Minus size={9} strokeWidth={3.5} color="#222222" />
+                </span>
+
+                {/* Quick close button on hover */}
+                <button
+                  type="button"
+                  className="dock-item-close-btn"
+                  title={`Close ${meta.label}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    closeWindow(id);
+                  }}
+                  aria-label={`Close ${meta.label}`}
+                >
+                  <X size={9} strokeWidth={3.5} />
+                </button>
+
+                {/* Tooltip */}
+                <span className="dock-tooltip">
+                  {meta.label} (Minimized) • Click to restore
+                </span>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
       </div>
     </div>
   );

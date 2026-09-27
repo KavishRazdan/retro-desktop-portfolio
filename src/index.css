@@ -284,6 +284,14 @@ button:active {
   display: flex;
   align-items: center;
   z-index: 1000;
+  max-width: calc(100vw - 32px);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.dock-wrapper::-webkit-scrollbar {
+  display: none;
 }
 
 .dock-inner-container {
@@ -338,6 +346,83 @@ button:active {
 .dock-item:hover .dock-tooltip {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Dock divider separating permanent shortcuts from minimized windows */
+.dock-divider {
+  width: 2px;
+  height: 28px;
+  background-color: rgba(68, 68, 68, 0.35);
+  border-right: 1px solid rgba(255, 255, 255, 0.6);
+  margin: 0 4px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* Minimized Dock Item */
+.dock-item-minimized {
+  position: relative;
+}
+
+.dock-minimized-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 16px;
+  height: 16px;
+  background-color: var(--folder-yellow);
+  border-radius: 50%;
+  border: 1.5px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 1px 1px 0px var(--border-color);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.dock-item-close-btn {
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: 16px;
+  height: 16px;
+  background-color: #FF5F56;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-color);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
+  cursor: pointer;
+  z-index: 3;
+  padding: 0;
+  box-shadow: 1px 1px 0px var(--border-color);
+}
+
+.dock-item-minimized:hover .dock-item-close-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.dock-item-close-btn:hover {
+  background-color: #E0443E;
+  transform: scale(1.15);
+}
+
+.dock-active-dot {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--border-color);
+  box-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
 }
 
 /* Window Component style */

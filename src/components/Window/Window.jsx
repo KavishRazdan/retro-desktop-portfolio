@@ -153,6 +153,7 @@ export const Window = ({ id, children }) => {
           <WindowHeader
             id={id}
             title={win.title}
+            onMinimize={handleMinimize}
             onClose={handleClose}
           />
           <div className="window-scrollable-content">
