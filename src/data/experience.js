@@ -2,7 +2,7 @@ export const experience = [
   {
     role: 'Frontend Developer Intern',
     company: 'SimplifyNote',
-    period: 'Summer 2024',
+    period: 'Summer 2025',
     description: 'Architected and delivered scalable, reusable React interfaces, optimized state management, and streamlined team workflows in an Agile environment.',
     bulletPoints: [
       'Engineered scalable and responsive UI components using React.js and Tailwind CSS, improving page load performance by 30%',

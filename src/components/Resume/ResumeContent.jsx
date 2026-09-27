@@ -119,7 +119,7 @@ export const ResumeContent = () => {
           <div style={{ marginBottom: '12px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px', fontSize: '13px' }}>
               <strong>Frontend Developer Intern</strong>
-              <span>Summer 2024</span>
+              <span>Summer 2025</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontStyle: 'italic', color: '#555', marginBottom: '6px' }}>
               <span>SimplifyNote</span>
