@@ -55,12 +55,6 @@ const FileSvg = () => (
   </svg>
 );
 
-const LeetCodeSvg = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="#FFFFFF" xmlns="http://www.w3.org/2000/svg">
-    <path d="M16.102 17.93l-2.69 2.607c-.466.451-1.211.451-1.677 0l-4.51-4.37a2.386 2.386 0 0 1 0-3.413l7.983-7.733c.466-.451 1.211-.451 1.677 0l1.053 1.02a1.156 1.156 0 0 1 0 1.677l-5.636 5.46a.397.397 0 0 0 0 .57l2.844 2.755c.466.452 1.211.452 1.677 0l5.636-5.46a1.156 1.156 0 0 1 1.677 0l1.053 1.02c.466.452.466 1.183 0 1.635l-9.13 8.84zM1.986 11.238l4.51 4.37c.466.451 1.211.451 1.677 0l2.69-2.607c.466-.451.466-1.183 0-1.635L8.01 8.61c-.466-.451-1.211-.451-1.677 0L1.986 12.98c-.466.452-.466 1.183 0 1.636z" />
-  </svg>
-);
-
 const getIconComponent = (iconName) => {
   switch (iconName) {
     case 'linkedin':
@@ -72,10 +66,8 @@ const getIconComponent = (iconName) => {
     case 'email':
       return <MailSvg />;
     case 'resume':
-      return <FileSvg />;
-    case 'leetcode':
     default:
-      return <LeetCodeSvg />;
+      return <FileSvg />;
   }
 };
 

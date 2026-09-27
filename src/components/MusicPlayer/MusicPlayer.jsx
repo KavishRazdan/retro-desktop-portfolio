@@ -1,198 +1,276 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, SkipForward, Volume2, Music } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Play, Pause, SkipForward, SkipBack, Square, Volume2, VolumeX } from 'lucide-react';
+import { audioEngine, TRACKS_DATA } from '../../utils/audioSynth';
 import './MusicPlayer.css';
 
-const TRACKS = [
-  { title: 'Synthwave Horizon', artist: 'RetroSynth', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
-  { title: 'Chiptune Dreams', artist: '8-Bit Hero', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
-  { title: 'Lo-Fi Chill Code', artist: 'Caffeine Kid', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' }
-];
+const formatTime = (secs) => {
+  if (isNaN(secs) || secs < 0) return '00:00';
+  const m = Math.floor(secs / 60);
+  const s = Math.floor(secs % 60);
+  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+};
 
 export const MusicPlayer = () => {
   const [trackIdx, setTrackIdx] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.5);
-  const [progress, setProgress] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [volume, setVolume] = useState(0.65);
+  const [isMuted, setIsMuted] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(TRACKS_DATA[0].duration);
+  const [eqLevels, setEqLevels] = useState([8, 12, 6, 10]);
 
-  const audioRef = useRef(new Audio(TRACKS[0].url));
-  const progressIntervalRef = useRef(null);
+  const animFrameRef = useRef(null);
 
+  const activeTrack = TRACKS_DATA[trackIdx] || TRACKS_DATA[0];
+
+  // Auto-start on mount and handle track switches
   useEffect(() => {
-    // Sync volume level
-    audioRef.current.volume = volume;
-  }, [volume]);
+    // Listeners for progress
+    audioEngine.onProgressUpdate = (curr, dur) => {
+      setCurrentTime(curr);
+      setDuration(dur);
+    };
 
-  useEffect(() => {
-    // Handle track switches
-    const wasPlaying = isPlaying;
-    audioRef.current.pause();
-    clearInterval(progressIntervalRef.current);
-
-    audioRef.current = new Audio(TRACKS[trackIdx].url);
-    audioRef.current.volume = volume;
-
-    if (wasPlaying) {
-      audioRef.current.play().then(() => {
-        setIsPlaying(true);
-        startProgressTimer();
-      }).catch(() => {
-        setIsPlaying(false);
-      });
-    } else {
-      setIsPlaying(false);
-      setProgress(0);
-    }
-
-    // Auto-advance track on end
-    const handleEnded = () => {
+    audioEngine.onEnded = () => {
       handleNext();
     };
-    audioRef.current.addEventListener('ended', handleEnded);
+
+    // Start playing current track
+    audioEngine.start(trackIdx);
+    setIsPlaying(true);
 
     return () => {
-      audioRef.current.pause();
-      audioRef.current.removeEventListener('ended', handleEnded);
-      clearInterval(progressIntervalRef.current);
+      audioEngine.pause();
     };
   }, [trackIdx]);
 
-  const startProgressTimer = () => {
-    clearInterval(progressIntervalRef.current);
-    progressIntervalRef.current = setInterval(() => {
-      if (audioRef.current.duration) {
-        const pct = (audioRef.current.currentTime / audioRef.current.duration) * 100;
-        setProgress(pct);
-      }
-    }, 500);
-  };
+  // Volume synchronization
+  useEffect(() => {
+    audioEngine.setVolume(isMuted ? 0 : volume);
+  }, [volume, isMuted]);
 
-  const handlePlayPause = () => {
+  // Equalizer visualizer loop
+  useEffect(() => {
+    const updateEqualizer = () => {
+      if (isPlaying) {
+        const freqs = audioEngine.getFrequencyData();
+        // Scale frequency byte (0-255) to bar height in px (3px to 22px)
+        const heights = freqs.map((f) => Math.max(3, Math.min(22, Math.floor((f / 255) * 22) + 3)));
+        setEqLevels(heights);
+      } else {
+        setEqLevels([3, 3, 3, 3]);
+      }
+      animFrameRef.current = requestAnimationFrame(updateEqualizer);
+    };
+
+    animFrameRef.current = requestAnimationFrame(updateEqualizer);
+
+    return () => {
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    };
+  }, [isPlaying]);
+
+  const handlePlayPause = useCallback(() => {
     if (isPlaying) {
-      audioRef.current.pause();
-      clearInterval(progressIntervalRef.current);
+      audioEngine.pause();
       setIsPlaying(false);
     } else {
-      audioRef.current.play().then(() => {
-        setIsPlaying(true);
-        startProgressTimer();
-      }).catch((err) => {
-        console.error("Audio playback interrupted:", err);
-      });
+      audioEngine.start(trackIdx);
+      setIsPlaying(true);
     }
-  };
+  }, [isPlaying, trackIdx]);
 
-  const handleNext = () => {
-    setTrackIdx((prev) => (prev + 1) % TRACKS.length);
-  };
+  const handleStop = useCallback(() => {
+    audioEngine.pause();
+    audioEngine.seek(0);
+    setIsPlaying(false);
+    setCurrentTime(0);
+  }, []);
 
-  const handleProgressBarClick = (e) => {
+  const handleNext = useCallback(() => {
+    setTrackIdx((prev) => (prev + 1) % TRACKS_DATA.length);
+  }, []);
+
+  const handlePrev = useCallback(() => {
+    setTrackIdx((prev) => (prev - 1 + TRACKS_DATA.length) % TRACKS_DATA.length);
+  }, []);
+
+  const handleSeek = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
-    const width = rect.width;
-    const newPct = clickX / width;
-    
-    if (audioRef.current.duration) {
-      audioRef.current.currentTime = newPct * audioRef.current.duration;
-      setProgress(newPct * 100);
+    const pct = Math.max(0, Math.min(1, clickX / rect.width));
+    const newTime = pct * duration;
+    audioEngine.seek(newTime);
+    setCurrentTime(newTime);
+  };
+
+  const selectTrack = (idx) => {
+    if (idx === trackIdx) {
+      if (!isPlaying) handlePlayPause();
+    } else {
+      setTrackIdx(idx);
     }
   };
 
-  const activeTrack = TRACKS[trackIdx];
+  const progressPct = duration > 0 ? Math.min(100, (currentTime / duration) * 100) : 0;
 
   return (
     <div className="music-player-container" id="lofi-widget">
-      
-      {/* Vinyl record player layout */}
+      {/* Top status badge */}
+      <div className={`music-status-badge ${isPlaying ? 'playing' : 'paused'}`}>
+        <span className="music-status-dot" />
+        <span>{isPlaying ? `Playing • ${activeTrack.bpm} BPM` : 'Paused'}</span>
+      </div>
+
+      {/* Vinyl record deck */}
       <div className="vinyl-deck">
         <div className={`vinyl-disc ${isPlaying ? 'spinning' : ''}`}>
           <div className="vinyl-groove" />
           <div className="vinyl-label" />
           <div className="vinyl-center" />
         </div>
-        {/* Turntable needle/arm */}
         <div className={`player-arm ${isPlaying ? 'active' : ''}`} />
       </div>
 
       {/* Song details */}
-      <div style={{ textAlign: 'center', marginTop: '12px' }}>
-        <h4 style={{ fontSize: '15px', fontWeight: 'bold', margin: '0 0 2px 0' }}>{activeTrack.title}</h4>
-        <p style={{ fontSize: '12px', color: '#666', margin: 0 }}>{activeTrack.artist}</p>
+      <div className="music-song-info">
+        <h4 className="music-song-title">{activeTrack.title}</h4>
+        <p className="music-song-artist">{activeTrack.artist}</p>
       </div>
 
       {/* Progress slider bar */}
       <div 
         className="music-progress-bar-track" 
-        onClick={handleProgressBarClick}
+        onClick={handleSeek}
         aria-label="Seek track"
         role="slider"
-        aria-valuenow={progress}
+        aria-valuenow={progressPct}
         aria-valuemin="0"
         aria-valuemax="100"
       >
-        <div className="music-progress-bar-fill" style={{ width: `${progress}%` }} />
+        <div className="music-progress-bar-fill" style={{ width: `${progressPct}%` }} />
       </div>
 
-      {/* Controls row */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginTop: '10px' }}>
-        {/* Equalizer animation bar */}
-        <div className="music-equalizer">
-          <div className={`eq-bar ${isPlaying ? 'anim' : ''}`} style={{ height: '18px' }} />
-          <div className={`eq-bar ${isPlaying ? 'anim' : ''}`} style={{ height: '24px', animationDelay: '0.15s' }} />
-          <div className={`eq-bar ${isPlaying ? 'anim' : ''}`} style={{ height: '14px', animationDelay: '0.3s' }} />
-          <div className={`eq-bar ${isPlaying ? 'anim' : ''}`} style={{ height: '20px', animationDelay: '0.05s' }} />
-        </div>
+      {/* Time display */}
+      <div className="music-time-row">
+        <span>{formatTime(currentTime)}</span>
+        <span>{formatTime(duration)}</span>
+      </div>
 
-        {/* Action Buttons */}
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <button 
-            onClick={handlePlayPause}
-            style={{ 
-              width: '36px', 
-              height: '36px', 
-              padding: 0, 
-              display: 'flex', 
-              justifyContent: 'center', 
-              alignItems: 'center',
-              backgroundColor: 'var(--accent-orange)',
-              borderColor: 'var(--border-color)'
-            }}
-            aria-label={isPlaying ? "Pause Track" : "Play Track"}
+      {/* Main playback action controls */}
+      <div className="music-controls-main">
+        {/* Previous Button */}
+        <button 
+          className="music-btn-secondary" 
+          onClick={handlePrev}
+          title="Previous Track"
+          aria-label="Previous Track"
+        >
+          <SkipBack size={18} color="#222222" fill="#222222" strokeWidth={2} />
+        </button>
+
+        {/* PROMINENT START / PAUSE BUTTON */}
+        <button 
+          id="music-btn-start-pause"
+          className={`music-btn-start-pause ${isPlaying ? 'pause-mode' : 'start-mode'}`}
+          onClick={handlePlayPause}
+          aria-label={isPlaying ? "Pause Track" : "Start Track"}
+          title={isPlaying ? "Click to Pause Track" : "Click to Start Track"}
+        >
+          {isPlaying ? (
+            <>
+              <Pause size={18} color="#FFFFFF" fill="#FFFFFF" strokeWidth={2} />
+              <span style={{ color: '#FFFFFF', fontWeight: 800 }}>PAUSE</span>
+            </>
+          ) : (
+            <>
+              <Play size={18} color="#FFFFFF" fill="#FFFFFF" strokeWidth={2} style={{ marginLeft: '2px' }} />
+              <span style={{ color: '#FFFFFF', fontWeight: 800 }}>START</span>
+            </>
+          )}
+        </button>
+
+        {/* Stop Button */}
+        <button 
+          className="music-btn-secondary music-btn-stop" 
+          onClick={handleStop}
+          title="Stop Track"
+          aria-label="Stop Track"
+        >
+          <Square size={16} color="#D32F2F" fill="#D32F2F" strokeWidth={1} />
+        </button>
+
+        {/* Next Button */}
+        <button 
+          className="music-btn-secondary" 
+          onClick={handleNext}
+          title="Next Track"
+          aria-label="Next Track"
+        >
+          <SkipForward size={18} color="#222222" fill="#222222" strokeWidth={2} />
+        </button>
+      </div>
+
+      {/* Track selector chips */}
+      <div className="music-track-chips">
+        {TRACKS_DATA.map((t, idx) => (
+          <button
+            key={t.id}
+            className={`music-track-chip ${idx === trackIdx ? 'active' : ''}`}
+            onClick={() => selectTrack(idx)}
+            title={`Play ${t.title}`}
           >
-            {isPlaying ? <Pause size={16} style={{ color: '#FFF' }} /> : <Play size={16} style={{ color: '#FFF' }} />}
+            {t.title}
           </button>
-          
-          <button 
-            onClick={handleNext}
-            style={{ 
-              width: '36px', 
-              height: '36px', 
-              padding: 0, 
-              display: 'flex', 
-              justifyContent: 'center', 
-              alignItems: 'center' 
-            }}
-            aria-label="Next Track"
-          >
-            <SkipForward size={16} />
-          </button>
+        ))}
+      </div>
+
+      {/* Bottom row: Visualizer and Volume slider */}
+      <div className="music-bottom-row">
+        {/* Realtime Equalizer Visualizer */}
+        <div className="music-equalizer" title="Audio Spectrum Visualizer">
+          {eqLevels.map((lvl, i) => (
+            <div 
+              key={i} 
+              className="eq-bar" 
+              style={{ height: `${lvl}px` }} 
+            />
+          ))}
         </div>
 
         {/* Volume controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <Volume2 size={14} />
+          <button 
+            type="button" 
+            onClick={() => setIsMuted(!isMuted)}
+            style={{ 
+              background: 'none', 
+              border: 'none', 
+              padding: '2px', 
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center'
+            }}
+            title={isMuted ? "Unmute" : "Mute"}
+            aria-label={isMuted ? "Unmute" : "Mute"}
+          >
+            {isMuted || volume === 0 ? <VolumeX size={15} /> : <Volume2 size={15} />}
+          </button>
           <input 
             type="range"
             min="0"
             max="1"
             step="0.05"
-            value={volume}
-            onChange={(e) => setVolume(parseFloat(e.target.value))}
-            style={{ width: '50px', accentColor: 'var(--header-bg)', cursor: 'pointer' }}
+            value={isMuted ? 0 : volume}
+            onChange={(e) => {
+              setVolume(parseFloat(e.target.value));
+              if (isMuted) setIsMuted(false);
+            }}
+            style={{ width: '60px', accentColor: 'var(--header-bg)', cursor: 'pointer' }}
             aria-label="Adjust Volume"
           />
         </div>
       </div>
-
     </div>
   );
 };

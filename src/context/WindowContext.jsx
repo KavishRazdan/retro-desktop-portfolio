@@ -13,7 +13,7 @@ const DEFAULT_WINDOWS = {
   terminal: { isOpen: false, isMinimized: false, isMaximized: false, x: 80, y: 260, width: 650, height: 400, title: 'C:\\KAVISH\\TERMINAL' },
   achievements: { isOpen: false, isMinimized: false, isMaximized: false, x: 160, y: 90, width: 550, height: 450, title: 'C:\\KAVISH\\ACHIEVEMENTS' },
   funfacts: { isOpen: false, isMinimized: false, isMaximized: false, x: 200, y: 130, width: 500, height: 400, title: 'C:\\KAVISH\\FUNFACTS' },
-  music: { isOpen: false, isMinimized: false, isMaximized: false, x: 280, y: 160, width: 380, height: 420, title: 'C:\\KAVISH\\NOW_PLAYING' },
+  music: { isOpen: false, isMinimized: false, isMaximized: false, x: 280, y: 160, width: 390, height: 470, title: 'C:\\KAVISH\\NOW_PLAYING' },
   timeline: { isOpen: false, isMinimized: false, isMaximized: false, x: 160, y: 210, width: 750, height: 550, title: 'C:\\KAVISH\\TIMELINE' }
 };
 

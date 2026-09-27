@@ -23,6 +23,5 @@ export const DOCK_ITEMS = [
   { id: 'github', label: 'GitHub', url: 'https://github.com/KavishRazdan', icon: 'github', color: '#24292E' },
   { id: 'portfolio', label: 'Kavish.OS (Home)', url: '#', isHome: true, icon: 'portfolio', color: '#717A50' },
   { id: 'email', label: 'Email', url: 'mailto:razdankavish67@gmail.com', icon: 'email', color: '#EA4C89' },
-  { id: 'resume', label: 'Resume PDF', url: '#', isDownload: true, icon: 'resume', color: '#FF8A00' },
-  { id: 'leetcode', label: 'LeetCode', url: 'https://leetcode.com/KavishRazdan', icon: 'leetcode', color: '#FFA116' }
+  { id: 'resume', label: 'Resume PDF', url: '#', isDownload: true, icon: 'resume', color: '#FF8A00' }
 ];
